@@ -7,11 +7,14 @@ export const authConfigSchema = z.object({
       .min(32, "JWT secret requires a minimum of 32 characters"),
     expiresIn: z.string().default("15m"),
   }),
-  redis: z.object({
-    url: z.string().default("redis://localhost:6379"),
-  }),
+  redis: z
+    .object({
+      url: z.string().default("redis://localhost:6379"),
+    })
+    .default({ url: "redis://localhost:6379" }),
   tokens: z
     .object({
+      accessTokenTtl: z.number().default(900),
       refreshTtl: z.number().default(604800), // 7 days
       verificationTtl: z.number().default(86400), // 24h
       otpTtl: z.number().default(900), // 15 min
@@ -53,7 +56,12 @@ export const authConfigSchema = z.object({
 export type AuthConfig = z.infer<typeof authConfigSchema>;
 
 const DEFAULTS = {
-  tokens: { refreshTtl: 604800, verificationTtl: 86400, otpTtl: 900 },
+  tokens: {
+    accessTokenTtl: 900,
+    refreshTtl: 604800,
+    verificationTtl: 86400,
+    otpTtl: 900,
+  },
   argon2: { memoryCost: 65536, timeCost: 3 },
   password: {
     minLength: 8,

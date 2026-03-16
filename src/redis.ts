@@ -36,7 +36,8 @@ export async function isBlacklisted(
   redis: RedisClient,
   jti: string,
 ): Promise<boolean> {
-  return redis.exists(`blacklist:${jti}`);
+  const result = await redis.get(`blacklist:${jti}`);
+  return result !== null;
 }
 
 // --- OTP ---

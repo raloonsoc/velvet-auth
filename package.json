@@ -1,13 +1,23 @@
 {
   "name": "velvet-auth",
+  "version": "0.1.0",
   "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "test": "bun test"
+  },
   "peerDependencies": {
     "elysia": ">=1.0.0"
   },
   "dependencies": {
     "@elysiajs/jwt": "^1.4.1",
-    "elysia": "^1.4.27",
-    "elysia-rate-limit": "^4.5.1",
     "zod": "^4.3.6"
   },
   "optionalDependencies": {
@@ -15,6 +25,7 @@
   },
   "devDependencies": {
     "@types/bun": "latest",
+    "elysia": "^1.4.27",
     "typescript": "^5"
   }
 }

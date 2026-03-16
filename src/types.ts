@@ -16,6 +16,7 @@ export interface TokenPayload {
   username: string;
   role: string;
   emailVerified: boolean;
+  exp?: number;
   jti: string; // Unique token id, used for blacklisting on logout
 }
 
