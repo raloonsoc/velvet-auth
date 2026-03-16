@@ -13,6 +13,24 @@
   "scripts": {
     "test": "bun test"
   },
+  "keywords": [
+    "elysia",
+    "bun",
+    "auth",
+    "authentication",
+    "jwt",
+    "redis",
+    "argon2",
+    "plugin"
+  ],
+  "homepage": "https://github.com/raloonsoc/velvet-auth",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/raloonsoc/velvet-auth"
+  },
+  "bugs": {
+    "url": "https://github.com/raloonsoc/velvet-auth/issues"
+  },
   "peerDependencies": {
     "elysia": ">=1.0.0"
   },
