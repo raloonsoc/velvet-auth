@@ -51,3 +51,32 @@ export const authConfigSchema = z.object({
 });
 
 export type AuthConfig = z.infer<typeof authConfigSchema>;
+
+const DEFAULTS = {
+  tokens: { refreshTtl: 604800, verificationTtl: 86400, otpTtl: 900 },
+  argon2: { memoryCost: 65536, timeCost: 3 },
+  password: {
+    minLength: 8,
+    requireUppercase: true,
+    requireNumber: true,
+    requireSpecial: true,
+  },
+  rateLimit: { auth: { max: 10, window: 60 } },
+  routes: { forgotPassword: true, emailVerification: true },
+};
+
+export function resolveConfig(input: unknown) {
+  const parsed = authConfigSchema.parse(input);
+  return {
+    ...parsed,
+    tokens: { ...DEFAULTS.tokens, ...parsed.tokens },
+    argon2: { ...DEFAULTS.argon2, ...parsed.argon2 },
+    password: { ...DEFAULTS.password, ...parsed.password },
+    rateLimit: {
+      auth: { ...DEFAULTS.rateLimit.auth, ...parsed.rateLimit?.auth },
+    },
+    routes: { ...DEFAULTS.routes, ...parsed.routes },
+  };
+}
+
+export type ResolvedConfig = ReturnType<typeof resolveConfig>;

@@ -1,7 +1,7 @@
 // --- INTERFACES ---
 
 /** Minimum shape a user record must satisfy for the plugin to work. */
-interface AuthUser {
+export interface AuthUser {
   id: string;
   username: string;
   email: string;
@@ -11,7 +11,7 @@ interface AuthUser {
 }
 
 /** Data encoded inside the JWT when it is signed. */
-interface TokenPayload {
+export interface TokenPayload {
   id: string;
   username: string;
   role: string;
@@ -20,7 +20,7 @@ interface TokenPayload {
 }
 
 /** User data injected into ctx.user by the auth guard. */
-interface AuthContext {
+export interface AuthContext {
   id: string;
   username: string;
   role: string;
@@ -28,7 +28,7 @@ interface AuthContext {
 }
 
 /** Data passed to userStore.create() when registering a new user. */
-interface CreateUserInput {
+export interface CreateUserInput {
   username: string;
   email: string;
   password: string; // Already hashed by the plugin before calling adapter
