@@ -1,20 +1,28 @@
-# velvet-auth
+<p align="center">
+  <img src="docs/banner.png" alt="velvet-auth" width="100%" style="max-height:400px;object-fit:cover;" />
+</p>
 
-Production-ready authentication plugin for [Elysia](https://elysiajs.com/) + [Bun](https://bun.sh/).
+[![npm](https://img.shields.io/npm/v/velvet-auth?style=flat-square&color=C41E3A&label=npm)](https://www.npmjs.com/package/velvet-auth) [![downloads](https://img.shields.io/npm/dm/velvet-auth?style=flat-square&color=C41E3A&label=downloads)](https://www.npmjs.com/package/velvet-auth) [![license](https://img.shields.io/github/license/raloonsoc/velvet-auth?style=flat-square&color=C41E3A)](https://github.com/raloonsoc/velvet-auth/blob/main/LICENSE) ![bun](https://img.shields.io/badge/bun-%3E%3D1.0-C41E3A?style=flat-square) ![elysia](https://img.shields.io/badge/elysia-%3E%3D1.0-C41E3A?style=flat-square)
 
-> **Bun-only.** Uses `Bun.password` (native Argon2id) and `Bun.Redis` (native Redis client). No extra native dependencies required.
+<p align="center">
+  Production-ready authentication plugin for <a href="https://elysiajs.com/">Elysia</a> + <a href="https://bun.sh/">Bun</a>.<br/>
+  JWT rotation · Argon2id · Redis sessions · Zero bloat.
+</p>
 
 ---
 
 ## Features
 
-- **JWT authentication** — access + refresh token rotation via httpOnly cookies
-- **Argon2id password hashing** — via Bun's native `Bun.password` API, zero extra deps
-- **Redis-backed sessions** — refresh tokens, JWT blacklist on logout
-- **Email verification** — SHA-256 tokenized flow (optional)
-- **Auth guard** — `createAuthGuard()` injects `ctx.user` on protected routes
-- **Adapter pattern** — bring your own email provider and user store
-- **Zod validation** — all config type-safe with sane defaults
+| | |
+|---|---|
+| **JWT rotation** | Access + refresh token rotation via `httpOnly` cookies |
+| **Argon2id** | Native via `Bun.password` — zero extra dependencies |
+| **Redis sessions** | Refresh tokens + JTI blacklist on logout via `GETDEL` |
+| **Adapter pattern** | Bring your own user store and email provider |
+| **Type-safe config** | Full Zod validation with sane defaults |
+| **Auth guard** | `createAuthGuard()` injects `ctx.user` on protected routes |
+
+> **Bun-only.** Uses `Bun.password` (native Argon2id) and `Bun.Redis` (native Redis client). No extra native dependencies required.
 
 ## Requirements
 
@@ -45,7 +53,7 @@ const app = new Elysia()
   .listen(3000);
 ```
 
-This mounts the following routes under `/auth` automatically:
+Mounts the following routes automatically:
 
 | Method | Route | Description |
 |--------|-------|-------------|
@@ -66,8 +74,6 @@ app.use(authGuard).get("/me", ({ user }) => user);
 ```
 
 ## Configuration
-
-All options with their defaults:
 
 ```typescript
 velvetAuth(userStore, emailAdapter, {
@@ -107,7 +113,7 @@ velvetAuth(userStore, emailAdapter, {
 
 ## Custom adapters
 
-### User store adapter
+### User store
 
 ```typescript
 import type { UserStoreAdapter } from "velvet-auth";
@@ -160,7 +166,7 @@ interface AuthContext {
 
 | Concern | Approach |
 |---------|----------|
-| Password hashing | Argon2id via `Bun.password` (native, no deps) |
+| Password hashing | Argon2id via `Bun.password` — native, no deps |
 | Email verification | SHA-256 of a random 32-byte token, stored in Redis |
 | Refresh tokens | UUID stored in Redis, consumed atomically with `GETDEL` |
 | JWT revocation | JTI blacklist in Redis on logout, TTL = `accessTokenTtl` |
@@ -169,8 +175,6 @@ interface AuthContext {
 
 ## Error responses
 
-All errors follow a consistent shape:
-
 ```json
 {
   "error": "UNAUTHORIZED",
@@ -178,12 +182,12 @@ All errors follow a consistent shape:
 }
 ```
 
-Error codes: `UNAUTHORIZED`, `FORBIDDEN`, `NOT_FOUND`, `BAD_REQUEST`, `INTERNAL_SERVER_ERROR`.
+Codes: `UNAUTHORIZED` · `FORBIDDEN` · `NOT_FOUND` · `BAD_REQUEST` · `INTERNAL_SERVER_ERROR`
 
 ## Roadmap
 
 - **v0.1** — Core: register, login, logout, refresh, auth guard ✓
-- **v0.2** — Email flows: forgot/reset password, email verification endpoint
+- **v0.2** — Email flows: forgot/reset password, email verification
 - **v0.3** — RBAC: `verifiedGuard`, `requiredRole`, Drizzle adapter
 
 ## License
