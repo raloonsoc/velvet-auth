@@ -2,7 +2,13 @@
   <img src="docs/banner.png" alt="velvet-auth" width="100%" style="max-height:400px;object-fit:cover;" />
 </p>
 
-[![npm](https://img.shields.io/npm/v/velvet-auth?style=flat-square&color=C41E3A&label=npm)](https://www.npmjs.com/package/velvet-auth) [![downloads](https://img.shields.io/npm/dm/velvet-auth?style=flat-square&color=C41E3A&label=downloads)](https://www.npmjs.com/package/velvet-auth) [![license](https://img.shields.io/github/license/raloonsoc/velvet-auth?style=flat-square&color=C41E3A)](https://github.com/raloonsoc/velvet-auth/blob/main/LICENSE) ![bun](https://img.shields.io/badge/bun-%3E%3D1.0-C41E3A?style=flat-square) ![elysia](https://img.shields.io/badge/elysia-%3E%3D1.0-C41E3A?style=flat-square)
+<p align="center">
+  <a href="https://www.npmjs.com/package/velvet-auth"><img src="https://img.shields.io/npm/v/velvet-auth?style=flat-square&color=C41E3A&label=npm" alt="npm" /></a>
+  <a href="https://www.npmjs.com/package/velvet-auth"><img src="https://img.shields.io/npm/dm/velvet-auth?style=flat-square&color=C41E3A&label=downloads" alt="downloads" /></a>
+  <a href="https://github.com/raloonsoc/velvet-auth/blob/main/LICENSE"><img src="https://img.shields.io/github/license/raloonsoc/velvet-auth?style=flat-square&color=C41E3A" alt="license" /></a>
+  <img src="https://img.shields.io/badge/bun-%3E%3D1.0-C41E3A?style=flat-square" alt="bun" />
+  <img src="https://img.shields.io/badge/elysia-%3E%3D1.0-C41E3A?style=flat-square" alt="elysia" />
+</p>
 
 <p align="center">
   Production-ready authentication plugin for <a href="https://elysiajs.com/">Elysia</a> + <a href="https://bun.sh/">Bun</a>.<br/>
@@ -11,18 +17,26 @@
 
 ---
 
+## Why velvet-auth?
+
+Every Bun/Elysia project needs the same auth stack: hash passwords securely, issue JWTs, rotate them, invalidate on logout. Setting it up from scratch every time is tedious and error-prone.
+
+velvet-auth packages that stack into a single plugin. You bring your own database and email provider — velvet-auth handles the rest.
+
+---
+
 ## Features
 
-| | |
-|---|---|
-| **JWT rotation** | Access + refresh token rotation via `httpOnly` cookies |
-| **Argon2id** | Native via `Bun.password` — zero extra dependencies |
-| **Redis sessions** | Refresh tokens + JTI blacklist on logout via `GETDEL` |
-| **Adapter pattern** | Bring your own user store and email provider |
-| **Type-safe config** | Full Zod validation with sane defaults |
-| **Auth guard** | `createAuthGuard()` injects `ctx.user` on protected routes |
+- **JWT rotation** — Access + refresh token rotation via `httpOnly` cookies, path-scoped for security
+- **Native Argon2id** — Password hashing via `Bun.password`, zero extra native dependencies
+- **Redis sessions** — Refresh tokens + JTI blacklist on logout using atomic `GETDEL`
+- **Adapter pattern** — Plug in any database or email provider with a simple interface
+- **Auth guard** — `createAuthGuard()` verifies the token and injects `ctx.user` on protected routes
+- **Type-safe config** — Full Zod validation with sane, secure defaults
 
-> **Bun-only.** Uses `Bun.password` (native Argon2id) and `Bun.Redis` (native Redis client). No extra native dependencies required.
+> **Bun-only.** Relies on `Bun.password` (native Argon2id) and `Bun.RedisClient`. No extra native dependencies required.
+
+---
 
 ## Requirements
 
@@ -30,11 +44,15 @@
 - Elysia >= 1.0
 - Redis instance
 
+---
+
 ## Installation
 
 ```sh
 bun add velvet-auth
 ```
+
+---
 
 ## Quick start
 
@@ -42,9 +60,27 @@ bun add velvet-auth
 import { Elysia } from "elysia";
 import { velvetAuth } from "velvet-auth";
 
+// 1. Implement the UserStoreAdapter for your database
+const userStore = {
+  findById:       async (id) => db.users.findOne({ id }),
+  findByUsername: async (username) => db.users.findOne({ username }),
+  findByEmail:    async (email) => db.users.findOne({ email }),
+  create:         async (data) => db.users.insert(data),
+  updatePassword: async (id, hash) => db.users.update({ id }, { password: hash }),
+  setEmailVerified: async (id) => db.users.update({ id }, { emailVerified: true }),
+};
+
+// 2. Implement the EmailAdapter for your email provider
+const emailAdapter = {
+  sendOtp:          async (to, otp) => mailer.send({ to, subject: "Your OTP", text: otp }),
+  sendVerification: async (to, url) => mailer.send({ to, subject: "Verify your email", text: url }),
+  checkStatus:      async () => true,
+};
+
+// 3. Mount the plugin
 const app = new Elysia()
   .use(
-    velvetAuth(myUserStore, myEmailAdapter, {
+    velvetAuth(userStore, emailAdapter, {
       jwt: {
         secret: process.env.JWT_SECRET!, // min 32 chars
       },
@@ -53,45 +89,63 @@ const app = new Elysia()
   .listen(3000);
 ```
 
-Mounts the following routes automatically:
+That's it. The following routes are now available:
 
 | Method | Route | Description |
 |--------|-------|-------------|
 | `POST` | `/auth/register` | Create account |
-| `POST` | `/auth/login` | Login |
+| `POST` | `/auth/login` | Login, set httpOnly cookies |
 | `POST` | `/auth/logout` | Logout + invalidate tokens |
 | `POST` | `/auth/refresh` | Rotate access + refresh tokens |
 
-## Guards
+---
+
+## Protecting routes
+
+Use `createAuthGuard()` to protect any route. It verifies the access token cookie, checks the JTI blacklist, and injects `ctx.user`.
 
 ```typescript
-import { createAuthGuard } from "velvet-auth";
+import { Elysia } from "elysia";
+import { velvetAuth, createAuthGuard } from "velvet-auth";
+
+const redis = new Bun.RedisClient(process.env.REDIS_URL!);
+const config = { jwt: { secret: process.env.JWT_SECRET! } };
 
 const authGuard = createAuthGuard(redis, config);
 
-// Requires valid JWT → injects ctx.user
-app.use(authGuard).get("/me", ({ user }) => user);
+const app = new Elysia()
+  .use(velvetAuth(userStore, emailAdapter, config))
+  .use(authGuard)
+  .get("/me", ({ user }) => user)         // { id, username, role, emailVerified }
+  .get("/dashboard", ({ user }) => {
+    return `Welcome, ${user.username}`;
+  })
+  .listen(3000);
 ```
 
+---
+
 ## Configuration
+
+All options with their defaults:
 
 ```typescript
 velvetAuth(userStore, emailAdapter, {
   // Required
   jwt: {
-    secret: string,               // min 32 chars
+    secret: string,        // min 32 chars
     expiresIn: "15m",
   },
 
-  // Optional — defaults shown
+  // Optional
   redis: {
     url: "redis://localhost:6379",
   },
   tokens: {
-    accessTokenTtl: 900,          // 15 min
-    refreshTtl: 604800,           // 7 days
-    verificationTtl: 86400,       // 24h
-    otpTtl: 900,                  // 15 min
+    accessTokenTtl: 900,   // 15 min (seconds)
+    refreshTtl: 604800,    // 7 days  (seconds)
+    verificationTtl: 86400,// 24h     (seconds)
+    otpTtl: 900,           // 15 min  (seconds)
   },
   argon2: {
     memoryCost: 65536,
@@ -111,34 +165,44 @@ velvetAuth(userStore, emailAdapter, {
 });
 ```
 
-## Custom adapters
+---
 
-### User store
+## Adapters
+
+### UserStoreAdapter
+
+Implement this interface to connect velvet-auth to any database:
 
 ```typescript
 import type { UserStoreAdapter } from "velvet-auth";
 
-const myUserStore: UserStoreAdapter = {
-  findById: async (id) => { /* ... */ },
-  findByUsername: async (username) => { /* ... */ },
-  findByEmail: async (email) => { /* ... */ },
-  create: async (data) => { /* ... */ },
-  updatePassword: async (id, hash) => { /* ... */ },
-  setEmailVerified: async (id) => { /* ... */ },
+const userStore: UserStoreAdapter = {
+  findById:         async (id: string) => { /* return user or null */ },
+  findByUsername:   async (username: string) => { /* return user or null */ },
+  findByEmail:      async (email: string) => { /* return user or null */ },
+  create:           async (data) => { /* persist and return created user */ },
+  updatePassword:   async (id, hash) => { /* update password hash */ },
+  setEmailVerified: async (id) => { /* mark email as verified */ },
 };
 ```
 
-### Email adapter
+> The `password` field passed to `create()` is already hashed by velvet-auth — store it as-is.
+
+### EmailAdapter
+
+Implement this interface to connect any email provider (Resend, Nodemailer, etc.):
 
 ```typescript
 import type { EmailAdapter } from "velvet-auth";
 
-const myEmailAdapter: EmailAdapter = {
-  sendOtp: async (to, otp) => { /* ... */ },
-  sendVerification: async (to, url) => { /* ... */ },
-  checkStatus: async () => true,
+const emailAdapter: EmailAdapter = {
+  sendOtp:          async (to: string, otp: string) => { /* send OTP email */ },
+  sendVerification: async (to: string, url: string) => { /* send verification link */ },
+  checkStatus:      async () => true, /* return false if provider is unreachable */
 };
 ```
+
+---
 
 ## Types
 
@@ -148,7 +212,7 @@ interface AuthUser {
   id: string;
   username: string;
   email: string;
-  password: string;      // Argon2id hash
+  password: string;       // Argon2id hash
   role: string;
   emailVerified: boolean;
 }
@@ -162,18 +226,24 @@ interface AuthContext {
 }
 ```
 
+---
+
 ## Security design
 
 | Concern | Approach |
 |---------|----------|
-| Password hashing | Argon2id via `Bun.password` — native, no deps |
+| Password hashing | Argon2id via `Bun.password` — native, no extra deps |
 | Email verification | SHA-256 of a random 32-byte token, stored in Redis |
 | Refresh tokens | UUID stored in Redis, consumed atomically with `GETDEL` |
 | JWT revocation | JTI blacklist in Redis on logout, TTL = `accessTokenTtl` |
 | Cookies | `httpOnly`, refresh token path-scoped to `/auth/refresh` |
-| Anti-enumeration | `register` returns generic error for duplicate username/email |
+| Anti-enumeration | `register` returns a generic error for duplicate username/email |
+
+---
 
 ## Error responses
+
+All errors follow the same shape:
 
 ```json
 {
@@ -182,7 +252,15 @@ interface AuthContext {
 }
 ```
 
-Codes: `UNAUTHORIZED` · `FORBIDDEN` · `NOT_FOUND` · `BAD_REQUEST` · `INTERNAL_SERVER_ERROR`
+| Code | Status |
+|------|--------|
+| `UNAUTHORIZED` | 401 |
+| `FORBIDDEN` | 403 |
+| `NOT_FOUND` | 404 |
+| `BAD_REQUEST` | 400 |
+| `INTERNAL_SERVER_ERROR` | 500 |
+
+---
 
 ## Roadmap
 
@@ -190,6 +268,12 @@ Codes: `UNAUTHORIZED` · `FORBIDDEN` · `NOT_FOUND` · `BAD_REQUEST` · `INTERNA
 - **v0.2** — Email flows: forgot/reset password, email verification
 - **v0.3** — RBAC: `verifiedGuard`, `requiredRole`, Drizzle adapter
 
+---
+
 ## License
 
 MIT
+
+---
+
+If velvet-auth saves you time, a ⭐ on GitHub goes a long way.
