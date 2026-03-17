@@ -42,7 +42,7 @@ velvet-auth packages that stack into a single plugin. You bring your own databas
 
 - Bun >= 1.0
 - Elysia >= 1.0
-- Redis instance
+- Redis >= 6 or any RESP-compatible server (Valkey, KeyDB, etc.)
 
 ---
 
