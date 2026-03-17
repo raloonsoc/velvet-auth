@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>velvet-auth — banner</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            :root {
+                --bg: #0c0809;
+                --crimson: #c0392b;
+                --kw: #c678dd;    /* keywords  → purple  */
+                --str: #98c379;   /* strings   → green   */
+                --fn: #61afef;    /* functions → blue    */
+                --prop: #e06c75;  /* properties→ rose    */
+                --env: #e5c07b;   /* env vars  → amber   */
+                --var: #56b6c2;   /* variables → cyan    */
+                --pln: #abb2bf;   /* plain     → silver  */
+            }
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            /* ── Background: dot grid texture + crimson glow ── */
+            body {
+                width: 1280px;
+                height: 640px;
+                overflow: hidden;
+                font-family:
+                    "Inter",
+                    -apple-system,
+                    sans-serif;
+                -webkit-font-smoothing: antialiased;
+                background:
+                    radial-gradient(
+                        ellipse 65% 85% at 4% 50%,
+                        rgba(160, 18, 40, 0.28) 0%,
+                        transparent 65%
+                    ),
+                    radial-gradient(
+                        ellipse 38% 50% at 0% 100%,
+                        rgba(110, 8, 22, 0.22) 0%,
+                        transparent 60%
+                    ),
+                    radial-gradient(
+                        ellipse 40% 60% at 100% 50%,
+                        rgba(30, 20, 60, 0.16) 0%,
+                        transparent 65%
+                    ),
+                    var(--bg);
+                position: relative;
+            }
+
+            /* Decorative dot grid */
+            body::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                background-image: radial-gradient(
+                    rgba(255, 255, 255, 0.028) 1px,
+                    transparent 1px
+                );
+                background-size: 28px 28px;
+                pointer-events: none;
+            }
+
+            /* ── Layout ── */
+            .banner {
+                position: relative;
+                width: 1280px;
+                height: 640px;
+                display: flex;
+                align-items: center;
+                padding: 0 72px 0 80px;
+                gap: 0;
+            }
+
+            /* ══════════════ LEFT ══════════════ */
+            .left {
+                flex: 0 0 auto;
+                width: 438px;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            /* Status row */
+            .status-row {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 20px;
+            }
+
+            .status-pill {
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+                background: rgba(160, 18, 40, 0.13);
+                border: 1px solid rgba(192, 57, 43, 0.3);
+                border-radius: 999px;
+                padding: 3px 10px 3px 7px;
+                font-size: 11px;
+                color: #b06070;
+                font-weight: 600;
+                letter-spacing: 0.3px;
+                text-transform: uppercase;
+            }
+
+            .live-dot {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: var(--crimson);
+                box-shadow: 0 0 7px rgba(192, 57, 43, 0.8);
+            }
+
+            .status-sep {
+                color: #7a5a5a;
+                font-size: 12px;
+            }
+
+            .status-meta {
+                font-size: 11.5px;
+                color: #9a7272;
+                letter-spacing: 0.2px;
+            }
+
+            /* Brand */
+            .brand-row {
+                display: flex;
+                align-items: center;
+                gap: 14px;
+                margin-bottom: 13px;
+            }
+
+            .logo {
+                width: 52px;
+                height: 52px;
+                border-radius: 13px;
+                background: linear-gradient(
+                    140deg,
+                    #b83232 0%,
+                    #d43a3a 42%,
+                    #cc1f72 100%
+                );
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+                box-shadow:
+                    0 0 28px rgba(180, 30, 60, 0.42),
+                    0 2px 8px rgba(0, 0, 0, 0.5);
+            }
+
+            .logo svg {
+                width: 24px;
+                height: 24px;
+            }
+
+            .brand-name {
+                font-size: 38px;
+                font-weight: 800;
+                letter-spacing: -1px;
+                line-height: 1;
+                background: linear-gradient(135deg, #ffffff 30%, #e8d0d4 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            /* Subtitle */
+            .subtitle {
+                font-size: 14px;
+                color: #8a8090;
+                line-height: 1.7;
+                margin-bottom: 20px;
+            }
+
+            /* Badges */
+            .badges {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 7px;
+                margin-bottom: 20px;
+            }
+
+            .badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 5px 12px 5px 9px;
+                border-radius: 8px;
+                background: rgba(120, 15, 28, 0.15);
+                border: 1px solid rgba(160, 40, 60, 0.32);
+                color: #b09098;
+                font-size: 12px;
+                font-weight: 500;
+                letter-spacing: 0.1px;
+                /* subtle inner glow */
+                box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+            }
+
+            .badge-icon {
+                width: 14px;
+                height: 14px;
+                opacity: 0.88;
+                flex-shrink: 0;
+            }
+
+            /* Install command */
+            .install-cmd {
+                display: inline-flex;
+                align-items: center;
+                gap: 10px;
+                background: rgba(14, 7, 8, 0.9);
+                border: 1px solid rgba(160, 30, 45, 0.25);
+                border-radius: 8px;
+                padding: 10px 18px;
+                margin-bottom: 14px;
+                box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+            }
+
+            .dollar {
+                color: var(--crimson);
+                font-family: "Fira Code", monospace;
+                font-size: 13.5px;
+                font-weight: 500;
+            }
+
+            .cmd-text {
+                color: #d0d0d0;
+                font-family: "Fira Code", monospace;
+                font-size: 13.5px;
+            }
+
+            /* Tagline */
+            .tagline {
+                font-size: 11px;
+                color: #9a7878;
+                letter-spacing: 0.4px;
+                font-weight: 500;
+                text-transform: uppercase;
+            }
+
+            .tagline .sep {
+                color: #7a5050;
+                margin: 0 6px;
+            }
+
+            /* ══════════════ RIGHT ══════════════ */
+            .right {
+                flex: 1;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+            }
+
+            /* Editor — styled to match the crimson theme */
+            .editor {
+                width: 562px;
+                border-radius: 12px;
+                overflow: hidden;
+                border: 1px solid rgba(200, 60, 80, 0.38);
+                box-shadow:
+                    0 0 0 1px rgba(255, 255, 255, 0.07) inset,
+                    0 0 60px rgba(180, 20, 45, 0.32),
+                    0 0 120px rgba(140, 10, 30, 0.18),
+                    0 24px 64px rgba(0, 0, 0, 0.85),
+                    0 6px 18px rgba(0, 0, 0, 0.6);
+                backdrop-filter: blur(3px);
+                -webkit-backdrop-filter: blur(3px);
+            }
+
+            /* Titlebar tinted to match the theme */
+            .titlebar {
+                height: 40px;
+                background: linear-gradient(180deg, #2a1418 0%, #211012 100%);
+                display: flex;
+                align-items: center;
+                padding: 0 14px;
+                position: relative;
+                border-bottom: 1px solid rgba(200, 50, 70, 0.28);
+            }
+
+            .dots {
+                display: flex;
+                gap: 7px;
+                align-items: center;
+            }
+            .dot {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+            }
+            .dot-r {
+                background: #ff5f57;
+            }
+            .dot-y {
+                background: #febc2e;
+            }
+            .dot-g {
+                background: #28c840;
+            }
+
+            .filename {
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+                color: #7a5a60;
+                font-size: 12px;
+                font-family: "Fira Code", monospace;
+            }
+
+            /* Crimson accent strip above the code area */
+            .code-accent {
+                height: 2px;
+                background: linear-gradient(
+                    90deg,
+                    rgba(160, 18, 40, 0.55) 0%,
+                    rgba(160, 18, 40, 0.08) 55%,
+                    transparent 100%
+                );
+            }
+
+            /* Code area */
+            .code-area {
+                background: #1c1214;
+                padding: 20px 24px 32px 0;
+                font-family: "Fira Code", Consolas, monospace;
+                font-size: 13.5px;
+                line-height: 1.78;
+                color: var(--pln);
+                position: relative;
+                display: flex;
+                gap: 0;
+                /* crimson left border */
+                border-left: 2px solid rgba(180, 30, 55, 0.45);
+            }
+
+            /* Line numbers gutter */
+            .line-nums {
+                flex-shrink: 0;
+                width: 42px;
+                padding: 0 12px 0 16px;
+                text-align: right;
+                color: rgba(171, 178, 191, 0.22);
+                font-family: "Fira Code", monospace;
+                font-size: 12px;
+                line-height: 1.78;
+                user-select: none;
+                border-right: 1px solid rgba(180, 30, 55, 0.12);
+            }
+
+            /* Fade out at the bottom of the code */
+            .code-area::after {
+                content: "";
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 48px;
+                background: linear-gradient(
+                    transparent,
+                    rgba(28, 18, 20, 0.97)
+                );
+                pointer-events: none;
+            }
+
+            /* Clean <pre> code block */
+            .code-area pre {
+                margin: 0;
+                padding-left: 18px;
+                font-family: inherit;
+                font-size: inherit;
+                line-height: inherit;
+                white-space: pre;
+                background: none;
+                border: none;
+                flex: 1;
+            }
+
+            .kw {
+                color: var(--kw);
+            }
+            .str {
+                color: var(--str);
+            }
+            .fn {
+                color: var(--fn);
+            }
+            .prop {
+                color: var(--prop);
+            }
+            .env {
+                color: var(--env);
+            }
+            .var {
+                color: var(--var);
+            }
+            .pln {
+                color: var(--pln);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="banner">
+            <!-- ══ LEFT ══ -->
+            <div class="left">
+                <div class="status-row">
+                    <span class="status-pill"
+                        ><span class="live-dot"></span><span data-version>v0.1.7</span></span
+                    >
+                    <span class="status-sep">·</span>
+                    <span class="status-meta">MIT License</span>
+                    <span class="status-sep">·</span>
+                    <span class="status-meta">Bun-native</span>
+                </div>
+
+                <div class="brand-row">
+                    <div class="logo">
+                        <svg viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zm3 8H9V7a3 3 0 1 1 6 0v3zm-3 3a1.5 1.5 0 0 1 .75 2.8V17a.75.75 0 0 1-1.5 0v-1.2A1.5 1.5 0 0 1 12 13z"/>
+                        </svg>
+                    </div>
+                    <span class="brand-name">velvet-auth</span>
+                </div>
+
+                <p class="subtitle">
+                    Production-ready auth plugin<br />
+                    for Elysia + Bun
+                </p>
+
+                <div class="badges">
+                    <span class="badge">
+                        <!-- rotate icon -->
+                        <svg
+                            class="badge-icon"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                        >
+                            <path
+                                d="M21.5 2v6h-6M2.5 22v-6h6M2 12a10 10 0 0 1 18.5-5M22 12a10 10 0 0 1-18.5 5"
+                            />
+                        </svg>
+                        JWT Rotation
+                    </span>
+                    <span class="badge">
+                        <!-- shield icon -->
+                        <svg
+                            class="badge-icon"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                        >
+                            <path
+                                d="M12 2l7 4v6c0 5-3.5 9.7-7 11C8.5 21.7 5 17 5 12V6l7-4z"
+                            />
+                        </svg>
+                        Argon2id
+                    </span>
+                    <span class="badge">
+                        <!-- database icon -->
+                        <svg
+                            class="badge-icon"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                        >
+                            <ellipse cx="12" cy="5" rx="9" ry="3" />
+                            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
+                            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+                        </svg>
+                        RESP-Compatible
+                    </span>
+                    <span class="badge">
+                        <!-- check icon -->
+                        <svg
+                            class="badge-icon"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2.5"
+                            stroke-linecap="round"
+                        >
+                            <path d="M9 12l2 2 4-4" />
+                            <circle cx="12" cy="12" r="9" />
+                        </svg>
+                        Type-safe
+                    </span>
+                </div>
+
+                <div class="install-cmd">
+                    <span class="dollar">$</span>
+                    <span class="cmd-text">bun add velvet-auth</span>
+                </div>
+
+                <p class="tagline">
+                    Zero config<span class="sep">·</span>TypeScript-first<span
+                        class="sep"
+                        >·</span
+                    >Valkey support
+                </p>
+            </div>
+
+            <!-- ══ RIGHT ══ -->
+            <div class="right">
+                <div class="editor">
+                    <div class="titlebar">
+                        <div class="dots">
+                            <div class="dot dot-r"></div>
+                            <div class="dot dot-y"></div>
+                            <div class="dot dot-g"></div>
+                        </div>
+                        <span class="filename">auth.ts</span>
+                    </div>
+                    <div class="code-accent"></div>
+                    <div class="code-area">
+                        <div class="line-nums">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11</div>
+                        <pre>
+<span class="kw">import</span> { Elysia } <span class="kw">from</span> <span class="str">"elysia"</span>
+<span class="kw">import</span> { velvetAuth, createAuthGuard } <span class="kw">from</span> <span class="str">"velvet-auth"</span>
+
+<span class="kw">const</span> app = <span class="kw">new</span> <span class="fn">Elysia</span>()
+  .<span class="fn">use</span>(<span class="fn">velvetAuth</span>(userStore, email, {
+    <span class="prop">jwt</span>:      { <span class="prop">secret</span>: <span class="env">process.env.JWT_SECRET</span> },
+    <span class="prop">session</span>:  { <span class="prop">store</span>: redis, <span class="prop">ttl</span>: <span class="str">"7d"</span> },
+    <span class="prop">password</span>: <span class="str">"argon2id"</span>,
+  }))
+  .<span class="fn">use</span>(<span class="fn">createAuthGuard</span>())
+  .<span class="fn">get</span>(<span class="str">"/me"</span>, ({ <span class="var">user</span> }) =&gt; <span class="var">user</span>)
+</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

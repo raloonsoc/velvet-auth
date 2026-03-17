@@ -19,23 +19,26 @@ export function createAuthGuard(redis: RedisClient, config: ResolvedConfig) {
         secret: config.jwt.secret,
       }),
     )
-    .derive({ as: "global" }, async ({ jwt, cookie }) => {
-      const token = cookie.access_token?.value;
-      if (!token) throw new UnauthorizedError();
+    .derive(
+      { as: "global" },
+      async ({ jwt, cookie }): Promise<{ user: AuthContext }> => {
+        const token = cookie.access_token?.value;
+        if (!token) throw new UnauthorizedError();
 
-      const raw = await jwt.verify(token as string);
-      if (!raw) throw new UnauthorizedError();
-      const payload = raw as unknown as TokenPayload;
+        const raw = await jwt.verify(token as string);
+        if (!raw) throw new UnauthorizedError();
+        const payload = raw as unknown as TokenPayload;
 
-      if (await isBlacklisted(redis, payload.jti))
-        throw new UnauthorizedError();
+        if (await isBlacklisted(redis, payload.jti))
+          throw new UnauthorizedError();
 
-      const user: AuthContext = {
-        id: payload.id,
-        username: payload.username,
-        role: payload.role,
-        emailVerified: payload.emailVerified,
-      };
-      return { user };
-    });
+        const user: AuthContext = {
+          id: payload.id,
+          username: payload.username,
+          role: payload.role,
+          emailVerified: payload.emailVerified,
+        };
+        return { user };
+      },
+    );
 }

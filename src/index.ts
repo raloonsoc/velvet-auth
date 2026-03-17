@@ -13,6 +13,7 @@ export type { AuthConfig } from "./config";
 
 export {
   AppError,
+  AuthError,
   BadRequestError,
   UnauthorizedError,
   ForbiddenError,

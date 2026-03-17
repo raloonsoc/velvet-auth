@@ -47,3 +47,5 @@ export class InternalServerError extends AppError {
     super(message, 500, "INTERNAL_SERVER_ERROR", details);
   }
 }
+
+export const AuthError = AppError;

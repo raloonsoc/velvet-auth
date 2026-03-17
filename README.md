@@ -12,7 +12,7 @@
 
 <p align="center">
   Production-ready authentication plugin for <a href="https://elysiajs.com/">Elysia</a> + <a href="https://bun.sh/">Bun</a>.<br/>
-  JWT rotation · Argon2id · Redis sessions · Zero bloat.
+  JWT rotation · Argon2id · RESP-compatible sessions · Zero bloat.
 </p>
 
 ---
@@ -29,7 +29,7 @@ velvet-auth packages that stack into a single plugin. You bring your own databas
 
 - **JWT rotation** — Access + refresh token rotation via `httpOnly` cookies, path-scoped for security
 - **Native Argon2id** — Password hashing via `Bun.password`, zero extra native dependencies
-- **Redis sessions** — Refresh tokens + JTI blacklist on logout using atomic `GETDEL`
+- **RESP-compatible sessions** — Refresh tokens + JTI blacklist on logout using atomic `GETDEL`. Works with Redis, Valkey, KeyDB, Dragonfly, and Garnet
 - **Adapter pattern** — Plug in any database or email provider with a simple interface
 - **Auth guard** — `createAuthGuard()` verifies the token and injects `ctx.user` on protected routes
 - **Type-safe config** — Full Zod validation with sane, secure defaults
@@ -42,7 +42,7 @@ velvet-auth packages that stack into a single plugin. You bring your own databas
 
 - Bun >= 1.0
 - Elysia >= 1.0
-- Redis >= 6 or any RESP-compatible server (Valkey, KeyDB, etc.)
+- Redis >= 6 or any RESP-compatible server (Valkey, KeyDB, Dragonfly, Garnet)
 
 ---
 

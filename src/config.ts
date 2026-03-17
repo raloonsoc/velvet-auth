@@ -52,6 +52,13 @@ export const authConfigSchema = z.object({
       emailVerification: z.boolean().default(true),
     })
     .optional(),
+  hooks: z
+    .object({
+      onRegister: z.custom<(user: any) => unknown>().optional(),
+      onLogin: z.custom<(user: any) => unknown>().optional(),
+      onLogout: z.custom<(user: any) => unknown>().optional(),
+    })
+    .optional(),
 });
 
 export type AuthConfig = z.input<typeof authConfigSchema>;
@@ -86,6 +93,7 @@ export function resolveConfig(input: unknown) {
       auth: { ...DEFAULTS.rateLimit.auth, ...parsed.rateLimit?.auth },
     },
     routes: { ...DEFAULTS.routes, ...parsed.routes },
+    hooks: parsed.hooks ?? {},
   };
 }
 

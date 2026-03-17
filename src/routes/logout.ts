@@ -23,7 +23,8 @@ export function createLogoutRoute(redis: RedisClient, config: ResolvedConfig) {
 
       const payload = raw as unknown as TokenPayload;
 
-      if (await isBlacklisted(redis, payload.jti)) throw new UnauthorizedError();
+      if (await isBlacklisted(redis, payload.jti))
+        throw new UnauthorizedError();
 
       await blacklistToken(redis, payload.jti, config.tokens.accessTokenTtl);
 
@@ -35,7 +36,7 @@ export function createLogoutRoute(redis: RedisClient, config: ResolvedConfig) {
 
       cookie.access_token?.remove();
       cookie.refresh_token?.remove();
-
+      await config.hooks?.onLogout?.(payload);
       return { success: true };
     });
 }

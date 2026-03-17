@@ -12,6 +12,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -20,8 +22,29 @@ jobs:
 
       - name: Publish to npm
         run: npm publish --access public
+        continue-on-error: true
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # ── Banner ────────────────────────────────────────────────────────
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Install Playwright
+        run: bunx playwright install chromium --with-deps
+
+      - name: Generate banner
+        run: bun scripts/gen-banner.ts
+
+      - name: Commit banner
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/banner.png docs/banner.html
+          git diff --staged --quiet || (
+            git commit -m "chore: update banner for ${{ github.ref_name }}" &&
+            git push origin HEAD:refs/heads/main
+          )
+      # ─────────────────────────────────────────────────────────────────
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

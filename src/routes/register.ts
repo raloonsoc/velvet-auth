@@ -16,6 +16,21 @@ const cookieOptions = {
   httpOnly: true,
 };
 
+function validatePasswordPolicy(
+  password: string,
+  policy: ResolvedConfig["password"],
+): string | null {
+  if (password.length < policy.minLength)
+    return `Password must be at least ${policy.minLength} characters`;
+  if (policy.requireUppercase && !/[A-Z]/.test(password))
+    return "Password must contain at least one uppercase letter";
+  if (policy.requireNumber && !/[0-9]/.test(password))
+    return "Password must contain at least one number";
+  if (policy.requireSpecial && !/[^A-Za-z0-9]/.test(password))
+    return "Password must contain at least one special character";
+  return null;
+}
+
 export function createRegisterRoute(
   redis: RedisClient,
   userStore: UserStoreAdapter,
@@ -41,6 +56,12 @@ export function createRegisterRoute(
         const existsEmail = await userStore.findByEmail(email);
         if (existsEmail) throw new BadRequestError();
 
+        const policyError = validatePasswordPolicy(
+          body.password,
+          config.password,
+        );
+        if (policyError) throw new BadRequestError(policyError);
+
         const hashedPassword = await hashPassword(body.password, config);
 
         const user = await userStore.create({
@@ -63,7 +84,11 @@ export function createRegisterRoute(
           );
 
           const verificationUrl = `${config.prefix}/verify-email?token=${verificationToken}&userId=${user.id}`;
-          await emailAdapter.sendVerification(user.email, verificationUrl);
+          try {
+            await emailAdapter.sendVerification(user.email, verificationUrl);
+          } catch (err) {
+            console.error("[velvet-auth] sendVerification failed:", err);
+          }
         }
 
         const jti = crypto.randomUUID();
@@ -93,7 +118,7 @@ export function createRegisterRoute(
           path: `${config.prefix}/refresh`,
         });
         const { password, ...userSafe } = user;
-
+        await config.hooks?.onRegister?.(userSafe);
         return { user: userSafe };
       },
       {

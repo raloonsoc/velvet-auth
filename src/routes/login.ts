@@ -62,7 +62,7 @@ export function createLoginRoute(
           path: `${config.prefix}/refresh`,
         });
         const { password, ...userSafe } = user;
-
+        await config.hooks?.onLogin?.(userSafe);
         return { user: userSafe };
       },
       {
