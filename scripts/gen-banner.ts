@@ -47,3 +47,13 @@ await page.screenshot({
 
 await browser.close();
 console.log(`✓ Banner saved → docs/banner.png`);
+
+// ── 4. Bust README cache by updating the version query string ─────────
+const readmePath = join(root, "README.md");
+const readme = await Bun.file(readmePath).text();
+const readmeUpdated = readme.replace(
+  /docs\/banner\.png\?v=v[\d.]+/,
+  `docs/banner.png?v=${version}`,
+);
+await Bun.write(readmePath, readmeUpdated);
+console.log(`✓ README cache-buster updated → ${version}`);

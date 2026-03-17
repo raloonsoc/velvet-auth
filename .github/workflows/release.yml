@@ -15,18 +15,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          registry-url: "https://registry.npmjs.org"
-
-      - name: Publish to npm
-        run: npm publish --access public
-        continue-on-error: true
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      # ── Banner ────────────────────────────────────────────────────────
+      # ── Banner (before publish so npm page shows the updated image) ──
       - uses: oven-sh/setup-bun@v2
 
       - name: Install Playwright
@@ -39,12 +28,22 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/banner.png docs/banner.html
+          git add docs/banner.png docs/banner.html README.md
           git diff --staged --quiet || (
             git commit -m "chore: update banner for ${{ github.ref_name }}" &&
             git push origin HEAD:refs/heads/main
           )
       # ─────────────────────────────────────────────────────────────────
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Publish to npm
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
