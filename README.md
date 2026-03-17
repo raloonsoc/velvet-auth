@@ -108,8 +108,9 @@ Use `createAuthGuard()` to protect any route. It verifies the access token cooki
 import { Elysia } from "elysia";
 import { velvetAuth, createAuthGuard } from "velvet-auth";
 
+// Pass the same client to both velvetAuth and createAuthGuard to avoid opening two connections
 const redis = new Bun.RedisClient(process.env.REDIS_URL!);
-const config = { jwt: { secret: process.env.JWT_SECRET! } };
+const config = { jwt: { secret: process.env.JWT_SECRET! }, redis: { client: redis } };
 
 const authGuard = createAuthGuard(redis, config);
 
@@ -139,7 +140,8 @@ velvetAuth(userStore, emailAdapter, {
 
   // Optional
   redis: {
-    url: "redis://localhost:6379",
+    url: "redis://localhost:6379",  // used to create an internal client
+    // client: myRedisClient,       // pass an existing Bun.RedisClient to reuse it
   },
   tokens: {
     accessTokenTtl: 900,   // 15 min (seconds)

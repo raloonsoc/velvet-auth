@@ -85,7 +85,13 @@ test("register: crea usuario y devuelve datos sin password", async () => {
   );
 
   expect(res.status).toBe(200);
-  const body = await res.json();
+  const body = (await res.json()) as {
+    user: {
+      username: string;
+      password?: string;
+      success?: boolean;
+    };
+  };
   expect(body.user.username).toBe("raul");
   expect(body.user.password).toBeUndefined();
 });
@@ -182,7 +188,7 @@ test("logout: devuelve 200 y elimina cookies", async () => {
   );
 
   expect(res.status).toBe(200);
-  const body = await res.json();
+  const body = (await res.json()) as any;
   expect(body.success).toBe(true);
 });
 

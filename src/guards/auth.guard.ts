@@ -19,7 +19,7 @@ export function createAuthGuard(redis: RedisClient, config: ResolvedConfig) {
         secret: config.jwt.secret,
       }),
     )
-    .derive(async ({ jwt, cookie }) => {
+    .derive({ as: "global" }, async ({ jwt, cookie }) => {
       const token = cookie.access_token?.value;
       if (!token) throw new UnauthorizedError();
 

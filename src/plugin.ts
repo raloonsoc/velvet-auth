@@ -14,7 +14,8 @@ export function velvetAuth(
   config: AuthConfig,
 ) {
   const resolved = resolveConfig(config);
-  const redis = new Bun.RedisClient(resolved.redis.url);
+  const redis =
+    resolved.redis.client ?? new Bun.RedisClient(resolved.redis.url);
 
   return new Elysia({ prefix: resolved.prefix })
     .onError(({ error, set }) => {

@@ -5,11 +5,12 @@ export const authConfigSchema = z.object({
     secret: z
       .string()
       .min(32, "JWT secret requires a minimum of 32 characters"),
-    expiresIn: z.string().default("15m"),
+    expiresIn: z.string().optional().default("15m"),
   }),
   redis: z
     .object({
-      url: z.string().default("redis://localhost:6379"),
+      url: z.string().optional().default("redis://localhost:6379"),
+      client: z.custom<import("bun").RedisClient>().optional(),
     })
     .default({ url: "redis://localhost:6379" }),
   tokens: z
@@ -44,7 +45,7 @@ export const authConfigSchema = z.object({
         .optional(),
     })
     .optional(),
-  prefix: z.string().default("/auth"),
+  prefix: z.string().optional().default("/auth"),
   routes: z
     .object({
       forgotPassword: z.boolean().default(true),
@@ -53,7 +54,8 @@ export const authConfigSchema = z.object({
     .optional(),
 });
 
-export type AuthConfig = z.infer<typeof authConfigSchema>;
+export type AuthConfig = z.input<typeof authConfigSchema>;
+export type AuthConfigOutput = z.infer<typeof authConfigSchema>;
 
 const DEFAULTS = {
   tokens: {
