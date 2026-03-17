@@ -5,6 +5,7 @@
 <p align="center">
   <a href="https://www.npmjs.com/package/velvet-auth"><img src="https://img.shields.io/npm/v/velvet-auth?style=flat-square&color=C41E3A&label=npm" alt="npm" /></a>
   <a href="https://www.npmjs.com/package/velvet-auth"><img src="https://img.shields.io/npm/dm/velvet-auth?style=flat-square&color=C41E3A&label=downloads" alt="downloads" /></a>
+  <a href="https://github.com/raloonsoc/velvet-auth/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/raloonsoc/velvet-auth/ci.yml?branch=main&style=flat-square&color=C41E3A&label=CI" alt="CI" /></a>
   <a href="https://github.com/raloonsoc/velvet-auth/blob/main/LICENSE"><img src="https://img.shields.io/github/license/raloonsoc/velvet-auth?style=flat-square&color=C41E3A" alt="license" /></a>
   <img src="https://img.shields.io/badge/bun-%3E%3D1.0-C41E3A?style=flat-square" alt="bun" />
   <img src="https://img.shields.io/badge/elysia-%3E%3D1.0-C41E3A?style=flat-square" alt="elysia" />

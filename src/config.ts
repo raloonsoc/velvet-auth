@@ -9,10 +9,13 @@ export const authConfigSchema = z.object({
   }),
   redis: z
     .object({
-      url: z.string().optional().default("redis://localhost:6379"),
+      url: z
+        .string()
+        .optional()
+        .default(process.env.REDIS_URL ?? "redis://localhost:6379"),
       client: z.custom<import("bun").RedisClient>().optional(),
     })
-    .default({ url: "redis://localhost:6379" }),
+    .default({ url: process.env.REDIS_URL ?? "redis://localhost:6379" }),
   tokens: z
     .object({
       accessTokenTtl: z.number().default(900),
