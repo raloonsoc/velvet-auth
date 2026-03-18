@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/banner.png?v=v0.1.7" alt="velvet-auth" width="100%" style="max-height:400px;object-fit:cover;" />
+  <img src="docs/banner.png?v=v0.1.9" alt="velvet-auth" width="100%" style="max-height:400px;object-fit:cover;" />
 </p>
 
 <p align="center">
