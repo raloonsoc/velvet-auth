@@ -78,7 +78,7 @@ const validUser = {
 
 // --- Register ---
 
-test("register: crea usuario y devuelve datos sin password", async () => {
+test("register: creates user and returns data without password", async () => {
   const app = createApp();
   const res = await app.handle(
     new Request(`${BASE}/auth/register`, json(validUser)),
@@ -96,7 +96,7 @@ test("register: crea usuario y devuelve datos sin password", async () => {
   expect(body.user.password).toBeUndefined();
 });
 
-test("register: setea cookies de access y refresh", async () => {
+test("register: sets access and refresh cookies", async () => {
   const app = createApp();
   const res = await app.handle(
     new Request(`${BASE}/auth/register`, json(validUser)),
@@ -107,7 +107,7 @@ test("register: setea cookies de access y refresh", async () => {
   expect(cookies).toContain("refresh_token=");
 });
 
-test("register: rechaza username duplicado con 400", async () => {
+test("register: rejects duplicate username with 400", async () => {
   const app = createApp();
   await app.handle(new Request(`${BASE}/auth/register`, json(validUser)));
   const res = await app.handle(
@@ -117,13 +117,13 @@ test("register: rechaza username duplicado con 400", async () => {
   expect(res.status).toBe(400);
 });
 
-test("register: rechaza email duplicado con 400", async () => {
+test("register: rejects duplicate email with 400", async () => {
   const app = createApp();
   await app.handle(new Request(`${BASE}/auth/register`, json(validUser)));
   const res = await app.handle(
     new Request(
       `${BASE}/auth/register`,
-      json({ ...validUser, username: "otro" }),
+      json({ ...validUser, username: "other" }),
     ),
   );
 
@@ -132,7 +132,7 @@ test("register: rechaza email duplicado con 400", async () => {
 
 // --- Login ---
 
-test("login: devuelve 200 y cookies con credenciales válidas", async () => {
+test("login: returns 200 and cookies with valid credentials", async () => {
   const app = createApp();
   await app.handle(new Request(`${BASE}/auth/register`, json(validUser)));
   const res = await app.handle(
@@ -146,7 +146,7 @@ test("login: devuelve 200 y cookies con credenciales válidas", async () => {
   expect(getCookies(res)).toContain("access_token=");
 });
 
-test("login: rechaza password incorrecto con 401", async () => {
+test("login: rejects wrong password with 401", async () => {
   const app = createApp();
   await app.handle(new Request(`${BASE}/auth/register`, json(validUser)));
   const res = await app.handle(
@@ -159,7 +159,7 @@ test("login: rechaza password incorrecto con 401", async () => {
   expect(res.status).toBe(401);
 });
 
-test("login: rechaza usuario inexistente con 401", async () => {
+test("login: rejects unknown user with 401", async () => {
   const app = createApp();
   const res = await app.handle(
     new Request(
@@ -173,7 +173,7 @@ test("login: rechaza usuario inexistente con 401", async () => {
 
 // --- Logout ---
 
-test("logout: devuelve 200 y elimina cookies", async () => {
+test("logout: returns 200 and clears cookies", async () => {
   const app = createApp();
   const registerRes = await app.handle(
     new Request(`${BASE}/auth/register`, json(validUser)),
@@ -192,7 +192,7 @@ test("logout: devuelve 200 y elimina cookies", async () => {
   expect(body.success).toBe(true);
 });
 
-test("logout: segundo logout con mismo token devuelve 401", async () => {
+test("logout: second logout with same token returns 401", async () => {
   const app = createApp();
   const registerRes = await app.handle(
     new Request(`${BASE}/auth/register`, json(validUser)),
@@ -216,7 +216,7 @@ test("logout: segundo logout con mismo token devuelve 401", async () => {
   expect(res.status).toBe(401);
 });
 
-test("logout: sin token devuelve 401", async () => {
+test("logout: without token returns 401", async () => {
   const app = createApp();
   const res = await app.handle(
     new Request(`${BASE}/auth/logout`, { method: "POST" }),
@@ -227,7 +227,7 @@ test("logout: sin token devuelve 401", async () => {
 
 // --- Refresh ---
 
-test("refresh: devuelve 200 y nuevas cookies", async () => {
+test("refresh: returns 200 and new cookies", async () => {
   const app = createApp();
   const registerRes = await app.handle(
     new Request(`${BASE}/auth/register`, json(validUser)),
@@ -246,7 +246,7 @@ test("refresh: devuelve 200 y nuevas cookies", async () => {
   expect(getCookies(res)).toContain("refresh_token=");
 });
 
-test("refresh: sin cookie devuelve 401", async () => {
+test("refresh: without cookie returns 401", async () => {
   const app = createApp();
   const res = await app.handle(
     new Request(`${BASE}/auth/refresh`, { method: "POST" }),
@@ -255,7 +255,7 @@ test("refresh: sin cookie devuelve 401", async () => {
   expect(res.status).toBe(401);
 });
 
-test("refresh: mismo refresh token no se puede usar dos veces", async () => {
+test("refresh: same refresh token cannot be used twice", async () => {
   const app = createApp();
   const registerRes = await app.handle(
     new Request(`${BASE}/auth/register`, json(validUser)),
